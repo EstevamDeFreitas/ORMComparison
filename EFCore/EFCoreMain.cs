@@ -6,11 +6,11 @@ namespace EFCore
 {
     public class EFCoreMain
     {
+        private string ConnectionString { get; set; }
 
-        static void Main(string[] args)
+        public EFCoreMain(string connectionString)
         {
-            EFCoreMain main = new EFCoreMain();
-            // faça chamadas aos métodos da classe EFCoreMain aqui
+            ConnectionString = connectionString;
         }
 
     }
