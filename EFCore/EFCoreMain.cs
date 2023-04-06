@@ -7,8 +7,7 @@ namespace EFCore
 {
     public class EFCoreMain
     {
-        private static readonly string _stringConexao
-        = "Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=ORMComparison;Data Source=DESKTOP-GPE9S1B\\SQLEXPRESS";
+        private static  string _stringConexao = "";
 
         private static DbContextOptions<MeuContexto> ObterOpcoesDbContext()
         {
@@ -20,7 +19,13 @@ namespace EFCore
             return optionsBuilder.Options;
         }
 
-        public static void Main()
+
+        public EFCoreMain(string connectionString)
+        {
+            _stringConexao = connectionString;
+        }
+
+        public void InitTest()
         {
             using (var contexto = new MeuContexto())
             {
