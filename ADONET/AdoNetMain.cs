@@ -17,17 +17,19 @@ namespace ADONET
 
             connection.Open();
 
-            string sql = "SELECT * FROM pessoa";
+            RunInsertTest(connection);
+        }
 
-            SqlCommand command = new SqlCommand(sql, connection);
-            SqlDataReader reader = command.ExecuteReader();
+        public void RunInsertTest(SqlConnection conn)
+        {
+            string query = "INSERT INTO Endereco (Id, Pais, Estado, Cidade, Rua, Numero) VALUES (@enderecoId, 'brasil', 'São Paulo', 'São Paulo', 'Rua A', '123')";
+            SqlCommand command = new SqlCommand(query, conn);
 
-            while (reader.Read())
-            {
-                Console.WriteLine(reader.GetGuid(0));
-            }
+            command.Parameters.AddWithValue("@enderecoId", Guid.NewGuid());
 
-            reader.Close();
+            var result = command.ExecuteNonQuery();
+
+            Console.WriteLine("Linhas afetadas: " + result);
         }
     }
 }
