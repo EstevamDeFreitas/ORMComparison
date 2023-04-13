@@ -20,6 +20,20 @@ public class DapperMain
         RunInsertTest(connection);
     }
 
+    public void getData(SqlConnection conn) 
+    {
+        string sql = "SELECT Id, Pais, Estado, Cidade, Rua, Numero FROM Enderecos";
+
+        List<Endereco> enderecos = conn.Query<Endereco>(sql).ToList();
+
+        Console.WriteLine(enderecos.Count);
+
+        foreach (Endereco endereco in enderecos)
+        {
+            Console.WriteLine($"Endereço {endereco.Id}: {endereco.Rua}, {endereco.Numero}, {endereco.Cidade}, {endereco.Estado}, {endereco.Pais}");
+        }
+    }
+
     public void RunInsertTest(SqlConnection conn) 
     {
 
