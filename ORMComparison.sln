@@ -19,10 +19,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADONET", "ADONET\ADONET.csp
 		{A1E5CCB9-5732-49F0-8042-239828DBE683} = {A1E5CCB9-5732-49F0-8042-239828DBE683}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHiber", "NHibernate\NHiber.csproj", "{87A589BA-BBEF-41FA-A731-9D03FAF14AB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHiber", "NHibernate\NHiber.csproj", "{87A589BA-BBEF-41FA-A731-9D03FAF14AB6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A1E5CCB9-5732-49F0-8042-239828DBE683} = {A1E5CCB9-5732-49F0-8042-239828DBE683}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DapperMain", "Dapper\DapperMain.csproj", "{B397494F-0B35-40A6-AE19-CE797942435C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +52,10 @@ Global
 		{87A589BA-BBEF-41FA-A731-9D03FAF14AB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87A589BA-BBEF-41FA-A731-9D03FAF14AB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87A589BA-BBEF-41FA-A731-9D03FAF14AB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B397494F-0B35-40A6-AE19-CE797942435C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B397494F-0B35-40A6-AE19-CE797942435C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B397494F-0B35-40A6-AE19-CE797942435C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B397494F-0B35-40A6-AE19-CE797942435C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
