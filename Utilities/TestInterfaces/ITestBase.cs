@@ -8,6 +8,6 @@ namespace Utilities.TestInterfaces
 {
     public interface ITestBase
     {
-
+        public void RunInsertTest(int insertAmount);
     }
 }
