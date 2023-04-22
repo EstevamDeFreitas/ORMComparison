@@ -1,16 +1,22 @@
-﻿using System.Data.SqlClient;
+﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
+using System.Data.SqlClient;
 
 namespace ADONET
 {
+    [MemoryDiagnoser]
+    [SimpleJob(launchCount:1, warmupCount:1, iterationCount:1, invocationCount:1, baseline:true)]
     public class AdoNetMain
     {
-        private string ConnectionString { get; set; }
+        private static string ConnectionString { get; } = "Data Source=DESKTOP-L42IOG5;Initial Catalog=orm_comparissondb;User ID=orm_user;Password=123456";
 
-        public AdoNetMain(string connectionString)
+        [GlobalSetup]
+        public void Setup()
         {
-            ConnectionString = connectionString;
+
         }
 
+        [Benchmark]
         public void InitTest()
         {
             SqlConnection connection = new SqlConnection(ConnectionString);
@@ -18,6 +24,10 @@ namespace ADONET
             connection.Open();
 
             RunInsertTest(connection);
+
+            connection.Close();
+
+            Console.WriteLine("Teste realizado");
         }
 
         public void RunInsertTest(SqlConnection conn)
