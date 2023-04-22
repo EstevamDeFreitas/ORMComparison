@@ -8,7 +8,7 @@ namespace ADONET
     [SimpleJob(launchCount:1, warmupCount:1, iterationCount:1, invocationCount:1, baseline:true)]
     public class AdoNetMain
     {
-        private static string ConnectionString { get; } = "Data Source=DESKTOP-L42IOG5;Initial Catalog=orm_comparissondb;User ID=orm_user;Password=123456";
+        private static string ConnectionString { get; } = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=orm_comparissondb;User ID=orm_user;Password=123456";
 
         [GlobalSetup]
         public void Setup()
@@ -17,7 +17,11 @@ namespace ADONET
         }
 
         [Benchmark]
-        public void InitTest()
+        [Arguments(100)]
+        [Arguments(150)]
+        [Arguments(200)]
+        [Arguments(250)]
+        public void InitTest(int testNumber)
         {
             SqlConnection connection = new SqlConnection(ConnectionString);
 
@@ -27,7 +31,7 @@ namespace ADONET
 
             connection.Close();
 
-            Console.WriteLine("Teste realizado");
+            Console.WriteLine("Teste realizado " + testNumber);
         }
 
         public void RunInsertTest(SqlConnection conn)
