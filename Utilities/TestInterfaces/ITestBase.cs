@@ -4,13 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.TestInterfaces
+namespace OrmUtilities
 {
     public interface ITestBase
     {
-        public void RunInsertTest(int testAmount);
-        public void RunUpdateTest(int testAmount);
-        public void RunDeleteTest(int testAmount);
-        public void RunGetTest(int testAmount);
+
+        //Specific Tests
+        public void RunInsertStudent();
+        public void RunUpdateStudent();
+        public void RunDeleteStudent();
+        public void RunGetStudent();
+
+        public void RunInsertTeacher();
+        public void RunUpdateTeacher();
+        public void RunDeleteTeacher();
+        public void RunGetTeacher();
+
+        public void Setup();
+        public void Cleanup();
     }
 }

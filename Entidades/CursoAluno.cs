@@ -10,6 +10,6 @@ namespace Entidades
     {
         public Guid AlunoId { get; set; }
         public Guid CursoId { get; set; }
-        public uint Nota { get; set; }
+        public int Nota { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace Entidades
         public string PrimeiroNome { get; set; }
         public string UltimoNome { get; set; }
         public string NumeroTelefone { get; set; }
-        public DateOnly DataNascimento { get; set; }
+        public DateTime DataNascimento { get; set; }
         public Guid EnderecoId { get; set; }
 
         public Endereco Endereco { get; set; }

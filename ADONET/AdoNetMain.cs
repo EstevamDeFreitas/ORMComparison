@@ -1,49 +1,109 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using System.Data.SqlClient;
+using OrmUtilities;
+using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace ADONET
 {
     [MemoryDiagnoser]
     [SimpleJob(launchCount:1, warmupCount:1, iterationCount:1, invocationCount:1, baseline:true)]
-    public class AdoNetMain
+    public class AdoNetEndereco: ITestBase
     {
-        private static string ConnectionString { get; } = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=orm_comparissondb;User ID=orm_user;Password=123456";
+        private static string ConnectionString { get; } = "Data Source=DESKTOP-L42IOG5;Initial Catalog=orm_comparissondb;User ID=orm_user;Password=123456";
+
+        private SqlConnection _connection { get; set; }
+
+        private EntitiesInfo entitiesInfo { get; set; }
+
+        [Params(500, 1000, 2000, 5000, 10000)]
+        public int TestAmount { get; set; }
 
         [GlobalSetup]
         public void Setup()
         {
+            _connection = new SqlConnection(ConnectionString);
+            _connection.Open();
 
+            entitiesInfo = new EntitiesInfo();
+        }
+
+        [GlobalCleanup]
+        public void Cleanup()
+        {
+            InsertTestCleanup();
+
+            _connection.Close();
+        }
+
+        [IterationCleanup(Target = nameof(RunInsertTest))]
+        public void InsertTestCleanup()
+        {
+            var deleteStatement = "DELETE Endereco";
+            SqlCommand command = new SqlCommand(deleteStatement, _connection);
+
+            command.ExecuteNonQuery();
         }
 
         [Benchmark]
-        [Arguments(100)]
-        [Arguments(150)]
-        [Arguments(200)]
-        [Arguments(250)]
-        public void InitTest(int testNumber)
+        public void RunInsertTest()
         {
-            SqlConnection connection = new SqlConnection(ConnectionString);
+            var insertStatement = "INSERT INTO Endereco (Id, Pais, Estado, Cidade, Rua, Numero) VALUES (@id, @pais, @estado, @cidade, @rua, @numero)";
 
-            connection.Open();
+            for (int i = 0; i < TestAmount; i++)
+            {
+                SqlCommand command = new SqlCommand(insertStatement, _connection);
 
-            RunInsertTest(connection);
+                command.Parameters.AddWithValue("@id", entitiesInfo.Enderecos[i].Id);
+                command.Parameters.AddWithValue("@pais", entitiesInfo.Enderecos[i].Pais);
+                command.Parameters.AddWithValue("@estado", entitiesInfo.Enderecos[i].Estado);
+                command.Parameters.AddWithValue("@cidade", entitiesInfo.Enderecos[i].Cidade);
+                command.Parameters.AddWithValue("@rua", entitiesInfo.Enderecos[i].Rua);
+                command.Parameters.AddWithValue("@numero", entitiesInfo.Enderecos[i].Numero);
 
-            connection.Close();
+                command.ExecuteNonQuery();
+            }
 
-            Console.WriteLine("Teste realizado " + testNumber);
         }
 
-        public void RunInsertTest(SqlConnection conn)
+        public void RunInsertStudent()
         {
-            string query = "INSERT INTO Endereco (Id, Pais, Estado, Cidade, Rua, Numero) VALUES (@enderecoId, 'brasil', 'São Paulo', 'São Paulo', 'Rua A', '123')";
-            SqlCommand command = new SqlCommand(query, conn);
+            throw new NotImplementedException();
+        }
 
-            command.Parameters.AddWithValue("@enderecoId", Guid.NewGuid());
+        public void RunUpdateStudent()
+        {
+            throw new NotImplementedException();
+        }
 
-            var result = command.ExecuteNonQuery();
+        public void RunDeleteStudent()
+        {
+            throw new NotImplementedException();
+        }
 
-            Console.WriteLine("Linhas afetadas: " + result);
+        public void RunGetStudent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RunInsertTeacher()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RunUpdateTeacher()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RunDeleteTeacher()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RunGetTeacher()
+        {
+            throw new NotImplementedException();
         }
     }
 }
