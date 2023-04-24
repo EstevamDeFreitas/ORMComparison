@@ -8,9 +8,9 @@ namespace ADONET
 {
     [MemoryDiagnoser]
     [SimpleJob(launchCount:1, warmupCount:1, iterationCount:1, invocationCount:1, baseline:true)]
-    public class AdoNetEndereco: ITestBase
+    public class AdoNetMain: ITestBase
     {
-        private static string ConnectionString { get; } = "Data Source=DESKTOP-L42IOG5;Initial Catalog=orm_comparissondb;User ID=orm_user;Password=123456";
+        private static string ConnectionString { get; } = "Data Source=DESKTOP-QAM9OUA\\SQLEXPRESS;Initial Catalog=orm_comparissondb;User ID=orm_user;Password=123456";
 
         private SqlConnection _connection { get; set; }
 
