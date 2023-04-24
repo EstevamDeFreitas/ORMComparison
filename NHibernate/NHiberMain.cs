@@ -8,10 +8,13 @@ using System.Collections.Generic;
 
 namespace NHibernate
 {
+
     public class NHibernateMain
     {
+        /*
+        
         private static ISessionFactory _sessionFactory;
-
+        
         public NHibernateMain(string connectionString)
         {
             var dbConfig = MsSqlConfiguration.MsSql2012.ConnectionString(connectionString);
@@ -39,7 +42,7 @@ namespace NHibernate
 
                     session.Save(cliente);
                     */
-
+        /*
                     tx.Commit();
                 }
             }
@@ -55,6 +58,7 @@ namespace NHibernate
             export.Create(false, true);
         }
 
+*/
     }
 }
 

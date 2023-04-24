@@ -1,4 +1,5 @@
 ﻿using EFCore;
+using EFCore.Mapping;
 using Entidades;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -7,38 +8,56 @@ namespace EFCore
 {
     public class EFCoreMain
     {
-        private static  string _stringConexao = "";
+        private static  string _stringConexao = "Initial Catalog=ORMComparison;Data Source=DESKTOP-GPE9S1B\\SQLEXPRESS;User ID=orm_user;Password=123456;TrustServerCertificate=True";
 
         private static DbContextOptions<MeuContexto> ObterOpcoesDbContext()
         {
-            var builder = new SqlConnectionStringBuilder(_stringConexao);
 
             var optionsBuilder = new DbContextOptionsBuilder<MeuContexto>();
-            optionsBuilder.UseSqlServer(builder.ConnectionString);
+            optionsBuilder.UseSqlServer(_stringConexao);
 
             return optionsBuilder.Options;
         }
 
 
-        public EFCoreMain(string connectionString)
+        public EFCoreMain()
         {
-            _stringConexao = connectionString;
         }
 
         public void InitTest()
         {
             using (var contexto = new MeuContexto())
             {
-                /*
+
                 // Cria uma nova instância de uma entidade e salva no banco de dados
-                var curso = new Curso
+                // (@enderecoId, 'brasil', 'São Paulo', 'São Paulo', 'Rua A', '123')
+                /*
+                 *    public Guid Id { get; set; }
+        public string Pais { get; set; }
+        public string Estado { get; set; }
+        public string Cidade { get; set; }
+        public string Rua { get; set; }
+        public string Numero { get; set; }
+                 */
+                var endereco = new Endereco
                 {
-                    Nome = "Introdução ao EF Core",
-                    Descricao = "Curso de introdução ao EF Core"
+                    Id = Guid.NewGuid(),
+                    Pais = "Brasil",
+                    Estado="SP",
+                    Cidade ="Mogi das Cruzes",
+                    Rua = "Astrea Barral Nébias",
+                    Numero = "99"
                 };
 
-                contexto.Cursos.Add(curso);
-                contexto.SaveChanges();*/
+                Console.WriteLine(endereco.Id);
+                Console.WriteLine(endereco.Pais);
+                Console.WriteLine(endereco.Estado);
+                Console.WriteLine(endereco.Cidade);
+                Console.WriteLine(endereco.Rua);
+                Console.WriteLine(endereco.Numero);
+
+                contexto.Enderecos.Add(endereco);
+                contexto.SaveChanges();
             }
         }
 
@@ -54,6 +73,18 @@ namespace EFCore
             public DbSet<Estudante> Estudantes { get; set; }
             public DbSet<Pessoa> Pessoas { get; set; }
             public DbSet<Professor> Professores { get; set; }
+
+            protected override void OnModelCreating(ModelBuilder modelBuilder)
+            {
+                modelBuilder.ApplyConfiguration(new CursoAlunoMapping());
+                modelBuilder.ApplyConfiguration(new CursoMapping());
+                modelBuilder.ApplyConfiguration(new EnderecoMapping());
+                modelBuilder.ApplyConfiguration(new EstudanteMapping());
+                modelBuilder.ApplyConfiguration(new PessoaMapping());
+                modelBuilder.ApplyConfiguration(new ProfessorMapping());
+            }
         }
+
+       
     }
 }

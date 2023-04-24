@@ -11,7 +11,7 @@ internal class Program
 
         adomain.InitTest();*/
 
-        EFCoreMain efcoremain = new EFCoreMain("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=ORMComparison;Data Source=DESKTOP-GPE9S1B\\SQLEXPRESS");
+        EFCoreMain efcoremain = new EFCoreMain();
         efcoremain.InitTest();
     }
 }
