@@ -20,7 +20,7 @@ namespace NHibernate
             var dbConfig = MsSqlConfiguration.MsSql2012.ConnectionString(connectionString);
             var fluentConfig = Fluently.Configure()
                 .Database(dbConfig)
-                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<Cliente>());
+                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<Estudante>());
 
             _sessionFactory = fluentConfig.BuildSessionFactory();
         }
@@ -48,11 +48,11 @@ namespace NHibernate
             }
         }
 
-        public static void BuildSchema()
+        public static void BuildSchema(string connectionString)
         {
             var fluentConfig = Fluently.Configure()
                 .Database(MsSqlConfiguration.MsSql2012.ConnectionString(connectionString))
-                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<Cliente>());
+                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<Estudante>());
 
             var export = new SchemaExport(fluentConfig.BuildConfiguration());
             export.Create(false, true);

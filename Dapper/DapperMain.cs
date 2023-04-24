@@ -6,8 +6,8 @@ namespace Dapper;
 public class DapperMain
 {
     private string _connectionString;
-    public DapperMain(string connectionString) 
-    { 
+    public DapperMain(string connectionString)
+    {
         _connectionString = connectionString;
     }
 
@@ -20,7 +20,7 @@ public class DapperMain
         RunInsertTest(connection);
     }
 
-    public void getData(SqlConnection conn) 
+    public void RunGetTest(SqlConnection conn)
     {
         string sql = "SELECT Id, Pais, Estado, Cidade, Rua, Numero FROM Enderecos";
 
@@ -34,7 +34,7 @@ public class DapperMain
         }
     }
 
-    public void RunInsertTest(SqlConnection conn) 
+    public void RunInsertTest(SqlConnection conn)
     {
 
         var endereco = new Endereco
@@ -54,4 +54,34 @@ public class DapperMain
         Console.WriteLine(affectedRows);
 
     }
+
+    private void RunDeleteTest(SqlConnection connection, Guid enderecoId)
+    {
+
+        string sql = "DELETE FROM Enderecos WHERE Id = @EnderecoId";
+
+        int affectedRows = connection.Execute(sql, new { EnderecoId = enderecoId });
+
+        Console.WriteLine($"Foram excluídas {affectedRows} linhas da tabela Enderecos.");
+    }
+
+    private void RunUpdateTest(SqlConnection connection, Guid enderecoId)
+    {
+        Endereco enderecoAtualizado = new Endereco
+        {
+            Id = enderecoId,
+            Pais = "Brasil",
+            Estado = "São Paulo",
+            Cidade = "São Paulo",
+            Rua = "Rua Nova",
+            Numero = "123"
+        };
+
+        string sql = "UPDATE Enderecos SET Pais = @Pais, Estado = @Estado, Cidade = @Cidade, Rua = @Rua, Numero = @Numero WHERE Id = @EnderecoId";
+
+        int affectedRows = connection.Execute(sql, enderecoAtualizado);
+
+        Console.WriteLine($"Foram atualizadas {affectedRows} linhas da tabela Enderecos.");
+    }
+
 }
