@@ -26,7 +26,8 @@ namespace OrmUtilities
                                                 .RuleFor(x => x.UltimoNome, f => f.Person.LastName);
 
         private Faker<Estudante> estudanteFaker = new Faker<Estudante>()
-                                                .RuleFor(x => x.Descricao, f => f.Lorem.Paragraph(5));
+                                                .RuleFor(x => x.Id, f => f.Random.Guid())
+                                                .RuleFor(x => x.Descricao, f => f.Lorem.Paragraph(1));
 
         private Faker<Professor> professorFaker = new Faker<Professor>()
                                                 .RuleFor(x => x.Especializacao, f => f.Lorem.Word())
@@ -35,7 +36,7 @@ namespace OrmUtilities
         private Faker<Curso> cursoFaker = new Faker<Curso> ()
                                                 .RuleFor(x => x.Id, f => f.Random.Guid())
                                                 .RuleFor(x => x.Nome, f => f.Lorem.Word())
-                                                .RuleFor(x => x.Descricao, f => f.Lorem.Paragraph(5));
+                                                .RuleFor(x => x.Descricao, f => f.Lorem.Paragraph(1));
 
         private Faker<CursoAluno> cursoAlunoFaker = new Faker<CursoAluno>()
                                                 .RuleFor(x => x.Nota, f => f.Random.Int(0, 10));

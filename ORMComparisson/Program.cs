@@ -16,12 +16,15 @@ internal class Program
 
 
 
-        BenchmarkRunner.Run<AdoNetMain>();
+        /*BenchmarkRunner.Run<AdoNetMain>();
 
 
 
         EFCoreMain efcoremain = new EFCoreMain();
-        efcoremain.InitTest();
+        efcoremain.InitTest();*/
+
+        var entitiesInfo = new EntitiesInfo();
+
     }
 
 }
