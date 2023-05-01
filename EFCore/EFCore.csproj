@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Entidades\Entidades.csproj" />
+    <ProjectReference Include="..\Utilities\OrmUtilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
