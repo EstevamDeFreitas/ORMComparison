@@ -1,23 +1,50 @@
-﻿using Entidades;
+﻿using BenchmarkDotNet.Attributes;
+using Entidades;
+using OrmUtilities;
 using System.Data.SqlClient;
 
 namespace Dapper;
 
-public class DapperMain
+[MemoryDiagnoser]
+[SimpleJob(launchCount: 1, warmupCount: 1, iterationCount: 1, invocationCount: 1, baseline: true)]
+public class DapperMain : ITestBase
 {
-    private string _connectionString;
-    public DapperMain(string connectionString)
+    private static string ConnectionString { get; } = "Data Source=DESKTOP-L42IOG5;Initial Catalog=orm_comparisson;User ID=orm_user;Password=123456";
+
+    private SqlConnection _connection { get; set; }
+
+    private EntitiesInfo entitiesInfo { get; set; }
+
+    [Params(500, 1000, 2000, 5000, 10000)]
+    public int TestAmount { get; set; }
+
+    [GlobalSetup]
+    public void Setup()
     {
-        _connectionString = connectionString;
+        _connection = new SqlConnection(ConnectionString);
+        _connection.Open();
+
+        entitiesInfo = new EntitiesInfo();
+    }
+
+    [GlobalCleanup]
+    public void Cleanup()
+    {
+        InsertTestCleanup();
+
+        _connection.Close();
+    }
+
+    [IterationCleanup(Target = nameof(RunInsertTest))]
+    public void InsertTestCleanup()
+    {
+        var deleteStatement = "DELETE FROM Endereco";
+        _connection.Execute(deleteStatement);
     }
 
     public void InitTest()
     {
-        SqlConnection connection = new SqlConnection(_connectionString);
-
-        connection.Open();
-
-        RunInsertTest(connection);
+        RunInsertTest(_connection);
     }
 
     public void RunGetTest(SqlConnection conn)
@@ -84,4 +111,43 @@ public class DapperMain
         Console.WriteLine($"Foram atualizadas {affectedRows} linhas da tabela Enderecos.");
     }
 
+    public void RunInsertStudent()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RunUpdateStudent()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RunDeleteStudent()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RunGetStudent()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RunInsertTeacher()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RunUpdateTeacher()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RunDeleteTeacher()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RunGetTeacher()
+    {
+        throw new NotImplementedException();
+    }
 }
