@@ -10,7 +10,7 @@ namespace OrmUtilities
 {
     public class EntitiesInfo
     {
-        private Faker<Endereco> enderecoFaker = new Faker<Endereco>()
+        private Faker<Endereco> enderecoFaker = new Faker<Endereco>("pt_BR")
                                                 .RuleFor(x => x.Numero, f => f.Address.BuildingNumber())
                                                 .RuleFor(x => x.Rua, f => f.Address.StreetName())
                                                 .RuleFor(x => x.Cidade, f => f.Address.City())
@@ -18,27 +18,27 @@ namespace OrmUtilities
                                                 .RuleFor(x => x.Id, f => f.Random.Guid())
                                                 .RuleFor(x => x.Pais, f => f.Address.Country());
 
-        private Faker<Pessoa> pessoaFaker = new Faker<Pessoa>()
+        private Faker<Pessoa> pessoaFaker = new Faker<Pessoa>("pt_BR")
                                                 .RuleFor(x => x.DataNascimento, f => f.Person.DateOfBirth)
                                                 .RuleFor(x => x.Id, f => f.Random.Guid())
                                                 .RuleFor(x => x.NumeroTelefone, f => f.Phone.PhoneNumber())
                                                 .RuleFor(x => x.PrimeiroNome, f => f.Person.FirstName)
                                                 .RuleFor(x => x.UltimoNome, f => f.Person.LastName);
 
-        private Faker<Estudante> estudanteFaker = new Faker<Estudante>()
+        private Faker<Estudante> estudanteFaker = new Faker<Estudante>("pt_BR")
                                                 .RuleFor(x => x.Id, f => f.Random.Guid())
-                                                .RuleFor(x => x.Descricao, f => f.Lorem.Paragraph(1));
+                                                .RuleFor(x => x.Descricao, f => f.Lorem.Word());
 
-        private Faker<Professor> professorFaker = new Faker<Professor>()
+        private Faker<Professor> professorFaker = new Faker<Professor>("pt_BR")
                                                 .RuleFor(x => x.Especializacao, f => f.Lorem.Word())
                                                 .RuleFor(x => x.Id, f => f.Random.Guid());
 
-        private Faker<Curso> cursoFaker = new Faker<Curso> ()
+        private Faker<Curso> cursoFaker = new Faker<Curso> ("pt_BR")
                                                 .RuleFor(x => x.Id, f => f.Random.Guid())
                                                 .RuleFor(x => x.Nome, f => f.Lorem.Word())
-                                                .RuleFor(x => x.Descricao, f => f.Lorem.Paragraph(1));
+                                                .RuleFor(x => x.Descricao, f => f.Lorem.Word());
 
-        private Faker<CursoAluno> cursoAlunoFaker = new Faker<CursoAluno>()
+        private Faker<CursoAluno> cursoAlunoFaker = new Faker<CursoAluno>("pt_BR")
                                                 .RuleFor(x => x.Nota, f => f.Random.Int(0, 10));
                                                 
 
@@ -58,6 +58,7 @@ namespace OrmUtilities
             {
                 var pessoa = pessoaFaker.Generate();
                 pessoa.EnderecoId = Enderecos[i].Id;
+                pessoa.Endereco = Enderecos[i];
                 Pessoas.Add(pessoa);
             }
 
@@ -67,6 +68,7 @@ namespace OrmUtilities
             {
                 var estudante = estudanteFaker.Generate();
                 estudante.PessoaId = Pessoas[i].Id;
+                estudante.Pessoa = Pessoas[i];
                 Estudantes.Add(estudante);
             }
 
@@ -77,6 +79,7 @@ namespace OrmUtilities
                 var professor = professorFaker.Generate();
 
                 professor.PessoaId = Pessoas[i].Id;
+                professor.Pessoa = Pessoas[i];
                 Professores.Add(professor);
             }
 
@@ -86,6 +89,7 @@ namespace OrmUtilities
             {
                 var curso = cursoFaker.Generate();
                 curso.ProfessorId = Professores[i].Id;
+                curso.Professor = Professores[i];
                 Cursos.Add(curso);
 
             }
@@ -97,6 +101,8 @@ namespace OrmUtilities
                 var cursoAluno = cursoAlunoFaker.Generate();
                 cursoAluno.AlunoId = Estudantes[i].Id;
                 cursoAluno.CursoId = Cursos[i].Id;
+                cursoAluno.Aluno = Estudantes[i];
+                cursoAluno.Curso = Cursos[i];
                 CursosAlunos.Add(cursoAluno);
             }
         }

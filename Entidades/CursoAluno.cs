@@ -11,5 +11,8 @@ namespace Entidades
         public Guid AlunoId { get; set; }
         public Guid CursoId { get; set; }
         public int Nota { get; set; }
+
+        public Curso Curso { get; set; }
+        public Estudante Aluno { get; set; }
     }
 }
