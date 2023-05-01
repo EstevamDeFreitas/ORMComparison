@@ -1,12 +1,18 @@
-﻿using EFCore;
+﻿using BenchmarkDotNet.Attributes;
+using EFCore;
 using EFCore.Mapping;
 using Entidades;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using OrmUtilities;
 
 namespace EFCore
 {
-    public class EFCoreMain
+
+    [MemoryDiagnoser]
+    [SimpleJob(launchCount: 1, warmupCount: 1, iterationCount: 1, invocationCount: 1, baseline: true)]
+
+    public class EFCoreMain : ITestBase
     {
         private static  string _stringConexao = "Initial Catalog=ORMComparison;Data Source=DESKTOP-GPE9S1B\\SQLEXPRESS;User ID=orm_user;Password=123456;TrustServerCertificate=True";
 
@@ -39,7 +45,7 @@ namespace EFCore
         public string Rua { get; set; }
         public string Numero { get; set; }
                  */
-                var endereco = new Endereco
+                /*var endereco = new Endereco
                 {
                     Id = Guid.NewGuid(),
                     Pais = "Brasil",
@@ -49,14 +55,27 @@ namespace EFCore
                     Numero = "99"
                 };
 
-                Console.WriteLine(endereco.Id);
-                Console.WriteLine(endereco.Pais);
-                Console.WriteLine(endereco.Estado);
-                Console.WriteLine(endereco.Cidade);
-                Console.WriteLine(endereco.Rua);
-                Console.WriteLine(endereco.Numero);
+                var pessoa = new Pessoa
+                { Id = Guid.NewGuid(),
+                  PrimeiroNome = "Francisco",
+                  UltimoNome = "Rangel",
+                  NumeroTelefone="(99) 45445-5455",
+                  DataNascimento = new DateTime(),
+                  EnderecoId = Guid.Parse("051F0A79-688C-4C46-8CAC-1EFCAA0F552D")
+                };*/
 
-                contexto.Enderecos.Add(endereco);
+                var estudante = new Estudante
+                {
+                    Id = Guid.NewGuid(),
+                    Descricao = "O mais lindo de todos!",
+                    PessoaId = Guid.Parse("937F8E54-2CD2-42E9-BACB-7A91680DD646")
+                };
+
+                Console.WriteLine(estudante.Id);
+                Console.WriteLine(estudante.Descricao);
+                Console.WriteLine(estudante.PessoaId);
+             
+                contexto.Estudantes.Add(estudante);
                 contexto.SaveChanges();
             }
         }
@@ -85,6 +104,54 @@ namespace EFCore
             }
         }
 
-       
+        public void RunInsertStudent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RunUpdateStudent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RunDeleteStudent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RunGetStudent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RunInsertTeacher()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RunUpdateTeacher()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RunDeleteTeacher()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RunGetTeacher()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Setup()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Cleanup()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
