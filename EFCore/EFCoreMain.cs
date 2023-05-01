@@ -45,7 +45,7 @@ namespace EFCore
         public string Rua { get; set; }
         public string Numero { get; set; }
                  */
-                var endereco = new Endereco
+                /*var endereco = new Endereco
                 {
                     Id = Guid.NewGuid(),
                     Pais = "Brasil",
@@ -55,14 +55,27 @@ namespace EFCore
                     Numero = "99"
                 };
 
-                Console.WriteLine(endereco.Id);
-                Console.WriteLine(endereco.Pais);
-                Console.WriteLine(endereco.Estado);
-                Console.WriteLine(endereco.Cidade);
-                Console.WriteLine(endereco.Rua);
-                Console.WriteLine(endereco.Numero);
+                var pessoa = new Pessoa
+                { Id = Guid.NewGuid(),
+                  PrimeiroNome = "Francisco",
+                  UltimoNome = "Rangel",
+                  NumeroTelefone="(99) 45445-5455",
+                  DataNascimento = new DateTime(),
+                  EnderecoId = Guid.Parse("051F0A79-688C-4C46-8CAC-1EFCAA0F552D")
+                };*/
 
-                contexto.Enderecos.Add(endereco);
+                var estudante = new Estudante
+                {
+                    Id = Guid.NewGuid(),
+                    Descricao = "O mais lindo de todos!",
+                    PessoaId = Guid.Parse("937F8E54-2CD2-42E9-BACB-7A91680DD646")
+                };
+
+                Console.WriteLine(estudante.Id);
+                Console.WriteLine(estudante.Descricao);
+                Console.WriteLine(estudante.PessoaId);
+             
+                contexto.Estudantes.Add(estudante);
                 contexto.SaveChanges();
             }
         }
