@@ -113,7 +113,60 @@ public class DapperMain : ITestBase
 
     public void RunInsertStudent()
     {
-        throw new NotImplementedException();
+        for (int i = 0; i < TestAmount; i++)
+        {
+            #region Insert Endereco
+            var insertAddressStatement = @"
+                INSERT INTO Endereco (Id, Pais, Estado, Cidade, Rua, Numero) 
+                VALUES (@Id, @Pais, @Estado, @Cidade, @Rua, @Numero)";
+
+            Endereco enderecoNovo = new Endereco
+            {
+                Id = entitiesInfo.Estudantes[i].Pessoa.Endereco.Id,
+                Pais = entitiesInfo.Estudantes[i].Pessoa.Endereco.Pais,
+                Estado = entitiesInfo.Estudantes[i].Pessoa.Endereco.Estado,
+                Cidade = entitiesInfo.Estudantes[i].Pessoa.Endereco.Cidade,
+                Rua = entitiesInfo.Estudantes[i].Pessoa.Endereco.Rua,
+                Numero = entitiesInfo.Estudantes[i].Pessoa.Endereco.Numero
+            };
+
+            _connection.Execute(insertAddressStatement, enderecoNovo);
+
+            #endregion
+
+            #region Insert Pessoa
+            var insertPersonStatement = @"
+                INSERT INTO Pessoa (Id,PrimeiroNome,UltimoNome,NumeroTelefone,DataNascimento,EnderecoId) 
+                VALUES (@Id,@PrimeiroNome,@UltimoNome,@NumeroTelefone,@DataNascimento,@EnderecoId)";
+
+            Pessoa pessoaNovo = new Pessoa
+            {
+                Id = entitiesInfo.Estudantes[i].Pessoa.Id,
+                PrimeiroNome = entitiesInfo.Estudantes[i].Pessoa.PrimeiroNome,
+                UltimoNome = entitiesInfo.Estudantes[i].Pessoa.UltimoNome,
+                NumeroTelefone = entitiesInfo.Estudantes[i].Pessoa.NumeroTelefone,
+                DataNascimento = entitiesInfo.Estudantes[i].Pessoa.DataNascimento,
+                EnderecoId = entitiesInfo.Estudantes[i].Pessoa.EnderecoId
+            };
+
+            _connection.Execute(insertPersonStatement, pessoaNovo);
+
+            #endregion
+
+            #region Insert Student
+            var insertStudentStatement = "INSERT INTO Estudante (Id,PessoaId,Descricao) VALUES (@Id,@PessoaId,@Descricao)";
+
+            Estudante estudanteNovo = new Estudante
+            {
+                Id = entitiesInfo.Estudantes[i].Id,
+                PessoaId = entitiesInfo.Estudantes[i].PessoaId,
+                Descricao = entitiesInfo.Estudantes[i].Descricao,
+            };
+
+            _connection.Execute(insertStudentStatement, estudanteNovo);
+
+            #endregion
+        }
     }
 
     public void RunUpdateStudent()
