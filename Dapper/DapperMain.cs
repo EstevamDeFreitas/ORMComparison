@@ -171,7 +171,46 @@ public class DapperMain : ITestBase
 
     public void RunUpdateStudent()
     {
-        throw new NotImplementedException();
+        string sql = $@"
+        SELECT TOP {TestAmount}
+            Estudante.Id AS EstudanteId, Estudante.Descricao, 
+            Pessoa.Id AS PessoaId, Pessoa.PrimeiroNome, Pessoa.UltimoNome, Pessoa.NumeroTelefone, Pessoa.DataNascimento,
+            Endereco.Id AS EnderecoId, Endereco.Pais, Endereco.Estado, Endereco.Cidade, Endereco.Rua, Endereco.Numero
+        FROM 
+            Estudante
+            INNER JOIN Pessoa ON Estudante.PessoaId = Pessoa.Id
+            INNER JOIN Endereco ON Pessoa.EnderecoId = Endereco.Id";
+
+        var estudantes = _connection.Query<Estudante, Pessoa, Endereco, Estudante>(
+            sql,
+            (estudante, pessoa, endereco) =>
+            {
+                estudante.Pessoa = pessoa;
+                pessoa.Endereco = endereco;
+                return estudante;
+            },
+            splitOn: "PessoaId,EnderecoId"
+        ).ToList();
+
+        Console.WriteLine(estudantes.Count);
+
+        foreach (Estudante estudante in estudantes)
+        {
+            Endereco novoEndereco = new Endereco
+            {
+                Id = estudante.Pessoa.Endereco.Id,
+                Pais = "Brasil",
+                Estado = "São Paulo",
+                Cidade = "São Paulo",
+                Rua = "Av. Paulista",
+                Numero = "1000"
+            };
+
+            estudante.Pessoa.Endereco = novoEndereco;
+
+            string sqlAtualizar = "UPDATE Enderecos SET Pais = @Pais, Estado = @Estado, Cidade = @Cidade, Rua = @Rua, Numero = @Numero WHERE Id = @Id";
+            _connection.Execute(sqlAtualizar, novoEndereco);
+        }
     }
 
     public void RunDeleteStudent()
