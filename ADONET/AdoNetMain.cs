@@ -10,7 +10,7 @@ namespace ADONET
     [SimpleJob(launchCount:1, warmupCount:1, iterationCount:1, invocationCount:1, baseline:true)]
     public class AdoNetMain: ITestBase
     {
-        private static string ConnectionString { get; } = "Data Source=DESKTOP-QAM9OUA\\SQLEXPRESS;Initial Catalog=orm_comparissondb;User ID=orm_user;Password=123456";
+        private static string ConnectionString { get; } = "Data Source=DESKTOP-L42IOG5;Initial Catalog=orm_comparisson;User ID=orm_user;Password=123456";
 
         private SqlConnection _connection { get; set; }
 
@@ -33,7 +33,7 @@ namespace ADONET
         {
             //InsertTestCleanup();
 
-            InsertStudentCleanup();
+            IterationCleanup();
 
             _connection.Close();
         }
@@ -119,8 +119,8 @@ namespace ADONET
             }
         }
 
-        [IterationCleanup(Target = nameof(RunInsertStudent))]
-        public void InsertStudentCleanup()
+        [IterationCleanup]
+        public void IterationCleanup()
         {
             var deleteEstudanteStatement = "DELETE Estudante";
             SqlCommand commandEstudante = new SqlCommand(deleteEstudanteStatement, _connection);
@@ -135,15 +135,74 @@ namespace ADONET
             commandEndereco.ExecuteNonQuery();
         }
 
-
-        public void RunUpdateStudent()
+        [IterationSetup(Target = nameof(RunUpdateStudent))]
+        public void UpdateStudentSetup()
         {
-            throw new NotImplementedException();
+            RunInsertStudent();
         }
 
+        [Benchmark]
+        public void RunUpdateStudent()
+        {
+            for (int i = 0; i < TestAmount; i++)
+            {
+                entitiesInfo.Estudantes[i].Pessoa.Endereco.Rua = "TESTE";
+                entitiesInfo.Estudantes[i].Pessoa.Endereco.Numero = "1546";
+                entitiesInfo.Estudantes[i].Pessoa.Endereco.Cidade = "CIDADE TESTE";
+                entitiesInfo.Estudantes[i].Pessoa.Endereco.Estado = "Estado TESTE";
+                entitiesInfo.Estudantes[i].Pessoa.Endereco.Pais = "PAIS TESTE";
+
+                var updateAddressStatement = "UPDATE Endereco SET Rua = @rua, Numero = @numero, Cidade = @cidade, Estado = @estado, Pais = @pais WHERE Id = @id";
+                SqlCommand commandAddress = new SqlCommand(updateAddressStatement, _connection);
+
+                commandAddress.Parameters.AddWithValue("@pais", entitiesInfo.Estudantes[i].Pessoa.Endereco.Pais);
+                commandAddress.Parameters.AddWithValue("@estado", entitiesInfo.Estudantes[i].Pessoa.Endereco.Estado);
+                commandAddress.Parameters.AddWithValue("@cidade", entitiesInfo.Estudantes[i].Pessoa.Endereco.Cidade);
+                commandAddress.Parameters.AddWithValue("@rua", entitiesInfo.Estudantes[i].Pessoa.Endereco.Rua);
+                commandAddress.Parameters.AddWithValue("@numero", entitiesInfo.Estudantes[i].Pessoa.Endereco.Numero);
+                commandAddress.Parameters.AddWithValue("@id", entitiesInfo.Estudantes[i].Pessoa.Endereco.Id);
+
+                commandAddress.ExecuteNonQuery();
+
+                entitiesInfo.Estudantes[i].Pessoa.NumeroTelefone = "12345678";
+                entitiesInfo.Estudantes[i].Pessoa.PrimeiroNome = "PESSOA TESTE";
+                entitiesInfo.Estudantes[i].Pessoa.DataNascimento = DateTime.Now;
+                entitiesInfo.Estudantes[i].Pessoa.UltimoNome = "SOBRENOME TESTE";
+
+                var updatePessoaStatement = "UPDATE Pessoa SET NumeroTelefone = @numeroTel, PrimeiroNome = @primeiroNome, DataNascimento = @dataNasc, UltimoNome = @ultimoNome WHERE Id = @id";
+                SqlCommand commandPessoa = new SqlCommand(updatePessoaStatement, _connection);
+
+                commandPessoa.Parameters.AddWithValue("@primeiroNome", entitiesInfo.Estudantes[i].Pessoa.PrimeiroNome);
+                commandPessoa.Parameters.AddWithValue("@ultimoNome", entitiesInfo.Estudantes[i].Pessoa.UltimoNome);
+                commandPessoa.Parameters.AddWithValue("@numeroTel", entitiesInfo.Estudantes[i].Pessoa.NumeroTelefone);
+                commandPessoa.Parameters.AddWithValue("@dataNasc", entitiesInfo.Estudantes[i].Pessoa.DataNascimento);
+                commandPessoa.Parameters.AddWithValue("@id", entitiesInfo.Estudantes[i].Pessoa.Id);
+
+                commandPessoa.ExecuteNonQuery();
+
+            }
+        }
+
+        [IterationSetup(Target = nameof(RunDeleteStudent))]
+        public void DeleteStudentSetup()
+        {
+            RunInsertStudent();
+        }
+
+        [Benchmark]
         public void RunDeleteStudent()
         {
-            throw new NotImplementedException();
+            var deleteEstudanteStatement = "DELETE Estudante";
+            SqlCommand commandEstudante = new SqlCommand(deleteEstudanteStatement, _connection);
+            commandEstudante.ExecuteNonQuery();
+
+            var deletePessoaStatement = "DELETE Pessoa";
+            SqlCommand commandPessoa = new SqlCommand(deletePessoaStatement, _connection);
+            commandPessoa.ExecuteNonQuery();
+
+            var deleteEnderecoStatement = "DELETE Endereco";
+            SqlCommand commandEndereco = new SqlCommand(deleteEnderecoStatement, _connection);
+            commandEndereco.ExecuteNonQuery();
         }
 
         public void RunGetStudent()
