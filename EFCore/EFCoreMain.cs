@@ -15,6 +15,14 @@ namespace EFCore
     public class EFCoreMain : ITestBase
     {
         private static  string _stringConexao = "Initial Catalog=ORMComparison;Data Source=DESKTOP-GPE9S1B\\SQLEXPRESS;User ID=orm_user;Password=123456;TrustServerCertificate=True";
+        /*
+        [Params(500, 1000, 2000, 5000, 10000)]
+        public int TestAmount { get; set; }*/
+
+        /*FOI NECESSARIO USAR UM VALOR MOCADO NO TESTAMOUNT POIS O NOTE DO CHICO NÃO RODA OO BENCHMARK*/
+        public int TestAmount = 1000;
+
+        private EntitiesInfo entitiesInfo { get; set; }
 
         private static DbContextOptions<MeuContexto> ObterOpcoesDbContext()
         {
@@ -28,56 +36,15 @@ namespace EFCore
 
         public EFCoreMain()
         {
+
+            entitiesInfo = new EntitiesInfo();
+
         }
 
         public void InitTest()
         {
-            using (var contexto = new MeuContexto())
-            {
-
-                // Cria uma nova instância de uma entidade e salva no banco de dados
-                // (@enderecoId, 'brasil', 'São Paulo', 'São Paulo', 'Rua A', '123')
-                /*
-                 *    public Guid Id { get; set; }
-        public string Pais { get; set; }
-        public string Estado { get; set; }
-        public string Cidade { get; set; }
-        public string Rua { get; set; }
-        public string Numero { get; set; }
-                 */
-                /*var endereco = new Endereco
-                {
-                    Id = Guid.NewGuid(),
-                    Pais = "Brasil",
-                    Estado="SP",
-                    Cidade ="Mogi das Cruzes",
-                    Rua = "Astrea Barral Nébias",
-                    Numero = "99"
-                };
-
-                var pessoa = new Pessoa
-                { Id = Guid.NewGuid(),
-                  PrimeiroNome = "Francisco",
-                  UltimoNome = "Rangel",
-                  NumeroTelefone="(99) 45445-5455",
-                  DataNascimento = new DateTime(),
-                  EnderecoId = Guid.Parse("051F0A79-688C-4C46-8CAC-1EFCAA0F552D")
-                };*/
-
-                var estudante = new Estudante
-                {
-                    Id = Guid.NewGuid(),
-                    Descricao = "O mais lindo de todos!",
-                    PessoaId = Guid.Parse("937F8E54-2CD2-42E9-BACB-7A91680DD646")
-                };
-
-                Console.WriteLine(estudante.Id);
-                Console.WriteLine(estudante.Descricao);
-                Console.WriteLine(estudante.PessoaId);
-             
-                contexto.Estudantes.Add(estudante);
-                contexto.SaveChanges();
-            }
+            //RunInsertStudent();
+            RunUpdateStudent();
         }
 
         public class MeuContexto : DbContext
@@ -106,15 +73,100 @@ namespace EFCore
 
         public void RunInsertStudent()
         {
-            throw new NotImplementedException();
-        }
+            using (var contexto = new MeuContexto())
+            {
+                for (int i = 0; i < TestAmount; i++)
+                {
+
+                    Endereco enderecoNovo = new Endereco
+                    {
+                        Id = entitiesInfo.Estudantes[i].Pessoa.Endereco.Id,
+                        Pais = entitiesInfo.Estudantes[i].Pessoa.Endereco.Pais,
+                        Estado = entitiesInfo.Estudantes[i].Pessoa.Endereco.Estado,
+                        Cidade = entitiesInfo.Estudantes[i].Pessoa.Endereco.Cidade,
+                        Rua = entitiesInfo.Estudantes[i].Pessoa.Endereco.Rua,
+                        Numero = entitiesInfo.Estudantes[i].Pessoa.Endereco.Numero
+                    };
+
+                    contexto.Enderecos.Add(enderecoNovo);
+
+
+                    Pessoa pessoaNovo = new Pessoa
+                    {
+                        Id = entitiesInfo.Estudantes[i].Pessoa.Id,
+                        PrimeiroNome = entitiesInfo.Estudantes[i].Pessoa.PrimeiroNome,
+                        UltimoNome = entitiesInfo.Estudantes[i].Pessoa.UltimoNome,
+                        NumeroTelefone = entitiesInfo.Estudantes[i].Pessoa.NumeroTelefone,
+                        DataNascimento = entitiesInfo.Estudantes[i].Pessoa.DataNascimento,
+                        EnderecoId = entitiesInfo.Estudantes[i].Pessoa.EnderecoId
+                    };
+
+                    contexto.Pessoas.Add(pessoaNovo);
+
+                    Estudante estudanteNovo = new Estudante
+                    {
+                        Id = entitiesInfo.Estudantes[i].Id,
+                        PessoaId = entitiesInfo.Estudantes[i].PessoaId,
+                        Descricao = entitiesInfo.Estudantes[i].Descricao,
+                    };
+
+                    contexto.Estudantes.Add(estudanteNovo);
+
+                }
+
+                contexto.SaveChanges();
+
+            }
+
+            }
 
         public void RunUpdateStudent()
         {
-            throw new NotImplementedException();
+            using (var contexto = new MeuContexto())
+            {
+                var estudantes = contexto.Estudantes
+    .Include(e => e.Pessoa)
+        .ThenInclude(p => p.Endereco)
+    .ToList();
+
+                foreach (var estudante in estudantes)
+                {
+                    estudante.Descricao = "Nova descrição";
+
+                    estudante.Pessoa.PrimeiroNome = "Novo primeiro nome";
+                    estudante.Pessoa.UltimoNome = "Novo ultimo nome";
+                    estudante.Pessoa.NumeroTelefone = "Novo numero de cel";
+                    estudante.Pessoa.DataNascimento = DateTime.Now;
+
+
+                    estudante.Pessoa.Endereco.Pais = "Australia";
+                    estudante.Pessoa.Endereco.Estado = "novo estado";
+                    estudante.Pessoa.Endereco.Cidade = "Nova cidade";
+                    estudante.Pessoa.Endereco.Rua = "Nova rua";
+                    estudante.Pessoa.Endereco.Numero = "1";
+
+                    /*
+                       Pais = "Brasil",
+            Estado = "São Paulo",
+            Cidade = "São Paulo",
+            Rua = "Rua Nova",
+            Numero = "123"
+                    
+                       public string PrimeiroNome { get; set; }
+        public string UltimoNome { get; set; }
+        public string NumeroTelefone { get; set; }
+        public DateTime DataNascimento { get; set; }*/
+
+
+                }
+
+
+                contexto.SaveChanges();
+            }
+
         }
 
-        public void RunDeleteStudent()
+            public void RunDeleteStudent()
         {
             throw new NotImplementedException();
         }
