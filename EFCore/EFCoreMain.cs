@@ -44,7 +44,9 @@ namespace EFCore
         public void InitTest()
         {
             //RunInsertStudent();
-            RunUpdateStudent();
+            //RunUpdateStudent();
+
+            RunDeleteStudent(); 
         }
 
         public class MeuContexto : DbContext
@@ -168,7 +170,28 @@ namespace EFCore
 
             public void RunDeleteStudent()
         {
-            throw new NotImplementedException();
+
+            using (var contexto = new MeuContexto())
+            {
+                var estudantes = contexto.Estudantes
+    .Include(e => e.Pessoa)
+        .ThenInclude(p => p.Endereco)
+    .ToList();
+
+                foreach (var estudante in estudantes)
+                {
+                    if (estudante != null)
+                    {
+                   
+                        contexto.Remove(estudante);
+                        contexto.Remove(estudante.Pessoa);
+                        contexto.Remove(estudante.Pessoa.Endereco);
+                        contexto.SaveChanges();
+                    }
+                }
+
+                }
+
         }
 
         public void RunGetStudent()
