@@ -113,12 +113,104 @@ public class DapperMain : ITestBase
 
     public void RunInsertStudent()
     {
-        throw new NotImplementedException();
+        for (int i = 0; i < TestAmount; i++)
+        {
+            #region Insert Endereco
+            var insertAddressStatement = @"
+                INSERT INTO Endereco (Id, Pais, Estado, Cidade, Rua, Numero) 
+                VALUES (@Id, @Pais, @Estado, @Cidade, @Rua, @Numero)";
+
+            Endereco enderecoNovo = new Endereco
+            {
+                Id = entitiesInfo.Estudantes[i].Pessoa.Endereco.Id,
+                Pais = entitiesInfo.Estudantes[i].Pessoa.Endereco.Pais,
+                Estado = entitiesInfo.Estudantes[i].Pessoa.Endereco.Estado,
+                Cidade = entitiesInfo.Estudantes[i].Pessoa.Endereco.Cidade,
+                Rua = entitiesInfo.Estudantes[i].Pessoa.Endereco.Rua,
+                Numero = entitiesInfo.Estudantes[i].Pessoa.Endereco.Numero
+            };
+
+            _connection.Execute(insertAddressStatement, enderecoNovo);
+
+            #endregion
+
+            #region Insert Pessoa
+            var insertPersonStatement = @"
+                INSERT INTO Pessoa (Id,PrimeiroNome,UltimoNome,NumeroTelefone,DataNascimento,EnderecoId) 
+                VALUES (@Id,@PrimeiroNome,@UltimoNome,@NumeroTelefone,@DataNascimento,@EnderecoId)";
+
+            Pessoa pessoaNovo = new Pessoa
+            {
+                Id = entitiesInfo.Estudantes[i].Pessoa.Id,
+                PrimeiroNome = entitiesInfo.Estudantes[i].Pessoa.PrimeiroNome,
+                UltimoNome = entitiesInfo.Estudantes[i].Pessoa.UltimoNome,
+                NumeroTelefone = entitiesInfo.Estudantes[i].Pessoa.NumeroTelefone,
+                DataNascimento = entitiesInfo.Estudantes[i].Pessoa.DataNascimento,
+                EnderecoId = entitiesInfo.Estudantes[i].Pessoa.EnderecoId
+            };
+
+            _connection.Execute(insertPersonStatement, pessoaNovo);
+
+            #endregion
+
+            #region Insert Student
+            var insertStudentStatement = "INSERT INTO Estudante (Id,PessoaId,Descricao) VALUES (@Id,@PessoaId,@Descricao)";
+
+            Estudante estudanteNovo = new Estudante
+            {
+                Id = entitiesInfo.Estudantes[i].Id,
+                PessoaId = entitiesInfo.Estudantes[i].PessoaId,
+                Descricao = entitiesInfo.Estudantes[i].Descricao,
+            };
+
+            _connection.Execute(insertStudentStatement, estudanteNovo);
+
+            #endregion
+        }
     }
 
     public void RunUpdateStudent()
     {
-        throw new NotImplementedException();
+        string sql = $@"
+        SELECT TOP {TestAmount}
+            Estudante.Id AS EstudanteId, Estudante.Descricao, 
+            Pessoa.Id AS PessoaId, Pessoa.PrimeiroNome, Pessoa.UltimoNome, Pessoa.NumeroTelefone, Pessoa.DataNascimento,
+            Endereco.Id AS EnderecoId, Endereco.Pais, Endereco.Estado, Endereco.Cidade, Endereco.Rua, Endereco.Numero
+        FROM 
+            Estudante
+            INNER JOIN Pessoa ON Estudante.PessoaId = Pessoa.Id
+            INNER JOIN Endereco ON Pessoa.EnderecoId = Endereco.Id";
+
+        var estudantes = _connection.Query<Estudante, Pessoa, Endereco, Estudante>(
+            sql,
+            (estudante, pessoa, endereco) =>
+            {
+                estudante.Pessoa = pessoa;
+                pessoa.Endereco = endereco;
+                return estudante;
+            },
+            splitOn: "PessoaId,EnderecoId"
+        ).ToList();
+
+        Console.WriteLine(estudantes.Count);
+
+        foreach (Estudante estudante in estudantes)
+        {
+            Endereco novoEndereco = new Endereco
+            {
+                Id = estudante.Pessoa.Endereco.Id,
+                Pais = "Brasil",
+                Estado = "São Paulo",
+                Cidade = "São Paulo",
+                Rua = "Av. Paulista",
+                Numero = "1000"
+            };
+
+            estudante.Pessoa.Endereco = novoEndereco;
+
+            string sqlAtualizar = "UPDATE Enderecos SET Pais = @Pais, Estado = @Estado, Cidade = @Cidade, Rua = @Rua, Numero = @Numero WHERE Id = @Id";
+            _connection.Execute(sqlAtualizar, novoEndereco);
+        }
     }
 
     public void RunDeleteStudent()
