@@ -62,7 +62,7 @@ namespace EFCore
                   NumeroTelefone="(99) 45445-5455",
                   DataNascimento = new DateTime(),
                   EnderecoId = Guid.Parse("051F0A79-688C-4C46-8CAC-1EFCAA0F552D")
-                };*/
+                };
 
                 var estudante = new Estudante
                 {
@@ -76,6 +76,19 @@ namespace EFCore
                 Console.WriteLine(estudante.PessoaId);
              
                 contexto.Estudantes.Add(estudante);
+                contexto.SaveChanges();*/
+
+                //var x =  contexto.Estudantes.ToList();
+
+                var professor = new Professor
+                {
+                    Id = Guid.NewGuid(),
+                    Especializacao = "Analise e Desenvolvimento de Sistemas!",
+                    PessoaId = Guid.Parse("937F8E54-2CD2-42E9-BACB-7A91680DD646")
+                };
+
+                contexto.Professores.Add(professor);
+
                 contexto.SaveChanges();
             }
         }
