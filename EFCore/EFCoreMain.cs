@@ -45,8 +45,11 @@ namespace EFCore
         {
             //RunInsertStudent();
             //RunUpdateStudent();
+            //RunDeleteStudent();
 
-            RunDeleteStudent(); 
+            //RunInsertTeacher();
+            //RunUpdateTeacher();
+            RunDeleteTeacher();
         }
 
         public class MeuContexto : DbContext
@@ -201,17 +204,122 @@ namespace EFCore
 
         public void RunInsertTeacher()
         {
-            throw new NotImplementedException();
+
+            using (var contexto = new MeuContexto())
+            {
+                for (int i = 0; i < TestAmount; i++)
+                {
+
+                    Endereco enderecoNovo = new Endereco
+                    {
+                        Id = entitiesInfo.Professores[i].Pessoa.Endereco.Id,
+                        Pais = entitiesInfo.Professores[i].Pessoa.Endereco.Pais,
+                        Estado = entitiesInfo.Professores[i].Pessoa.Endereco.Estado,
+                        Cidade = entitiesInfo.Professores[i].Pessoa.Endereco.Cidade,
+                        Rua = entitiesInfo.Professores[i].Pessoa.Endereco.Rua,
+                        Numero = entitiesInfo.Professores[i].Pessoa.Endereco.Numero
+                    };
+
+                    contexto.Enderecos.Add(enderecoNovo);
+
+
+                    Pessoa pessoaNovo = new Pessoa
+                    {
+                        Id = entitiesInfo.Professores[i].Pessoa.Id,
+                        PrimeiroNome = entitiesInfo.Professores[i].Pessoa.PrimeiroNome,
+                        UltimoNome = entitiesInfo.Professores[i].Pessoa.UltimoNome,
+                        NumeroTelefone = entitiesInfo.Professores[i].Pessoa.NumeroTelefone,
+                        DataNascimento = entitiesInfo.Professores[i].Pessoa.DataNascimento,
+                        EnderecoId = entitiesInfo.Professores[i].Pessoa.EnderecoId
+                    };
+
+                    contexto.Pessoas.Add(pessoaNovo);
+
+                    Professor professorNovo = new Professor
+                    {
+                        Id = entitiesInfo.Professores[i].Id,
+                        PessoaId = entitiesInfo.Professores[i].PessoaId,
+                        Especializacao = entitiesInfo.Professores[i].Especializacao,
+                    };
+
+                    contexto.Professores.Add(professorNovo);
+
+                }
+
+                contexto.SaveChanges();
+
+            }
+            
         }
 
         public void RunUpdateTeacher()
         {
-            throw new NotImplementedException();
+            using (var contexto = new MeuContexto())
+            {
+                var professores = contexto.Professores
+    .Include(e => e.Pessoa)
+        .ThenInclude(p => p.Endereco)
+    .ToList();
+
+                foreach (var professor in professores)
+                {
+                    professor.Especializacao = "Nova especialização";
+
+                    professor.Pessoa.PrimeiroNome = "Novo primeiro nome";
+                    professor.Pessoa.UltimoNome = "Novo ultimo nome";
+                    professor.Pessoa.NumeroTelefone = "Novo numero de cel";
+                    professor.Pessoa.DataNascimento = DateTime.Now;
+
+
+                    professor.Pessoa.Endereco.Pais = "Australia";
+                    professor.Pessoa.Endereco.Estado = "novo estado";
+                    professor.Pessoa.Endereco.Cidade = "Nova cidade";
+                    professor.Pessoa.Endereco.Rua = "Nova rua";
+                    professor.Pessoa.Endereco.Numero = "1";
+
+                    /*
+                       Pais = "Brasil",
+            Estado = "São Paulo",
+            Cidade = "São Paulo",
+            Rua = "Rua Nova",
+            Numero = "123"
+                    
+                       public string PrimeiroNome { get; set; }
+        public string UltimoNome { get; set; }
+        public string NumeroTelefone { get; set; }
+        public DateTime DataNascimento { get; set; }*/
+
+
+                }
+
+
+                contexto.SaveChanges();
+            }
         }
 
         public void RunDeleteTeacher()
         {
-            throw new NotImplementedException();
+            using (var contexto = new MeuContexto())
+            {
+                var professores = contexto.Professores
+     .Include(e => e.Pessoa)
+         .ThenInclude(p => p.Endereco)
+     .ToList();
+
+                foreach (var professor in professores)
+                {
+                    if (professor != null)
+                    {
+
+                        contexto.Remove(professor);
+                        contexto.Remove(professor.Pessoa);
+                        contexto.Remove(professor.Pessoa.Endereco);
+                        contexto.SaveChanges();
+                    }
+                }
+
+            }
+
         }
 
         public void RunGetTeacher()
