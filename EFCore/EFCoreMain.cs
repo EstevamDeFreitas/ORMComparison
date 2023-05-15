@@ -46,10 +46,13 @@ namespace EFCore
             //RunInsertStudent();
             //RunUpdateStudent();
             //RunDeleteStudent();
+            //RunGetStudent();
 
             //RunInsertTeacher();
             //RunUpdateTeacher();
-            RunDeleteTeacher();
+            //RunDeleteTeacher();
+
+            RunGetTeacher();
         }
 
         public class MeuContexto : DbContext
@@ -199,7 +202,19 @@ namespace EFCore
 
         public void RunGetStudent()
         {
-            throw new NotImplementedException();
+
+            using (var contexto = new MeuContexto())
+            {
+                var estudantesCompletos = contexto.Estudantes
+                                   .Include(e => e.Pessoa)
+                                   .ThenInclude(p => p.Endereco)
+                                   .ToList();
+
+                Console.WriteLine(estudantesCompletos.Count);
+            }
+
+           
+
         }
 
         public void RunInsertTeacher()
@@ -324,7 +339,17 @@ namespace EFCore
 
         public void RunGetTeacher()
         {
-            throw new NotImplementedException();
+
+            using (var contexto = new MeuContexto())
+            {
+                var professorCompletos = contexto.Professores
+                                   .Include(e => e.Pessoa)
+                                   .ThenInclude(p => p.Endereco)
+                                   .ToList();
+
+                Console.WriteLine(professorCompletos.Count);
+            }
+
         }
 
         public void Setup()
