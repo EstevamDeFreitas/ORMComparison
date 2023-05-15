@@ -13,5 +13,6 @@ namespace Entidades
         public Guid PessoaId { get; set; }
 
         public Pessoa Pessoa { get; set; }
+        public List<Curso> Cursos { get; set; }
     }
 }

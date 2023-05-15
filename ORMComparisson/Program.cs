@@ -10,12 +10,12 @@ internal class Program
     private static void Main(string[] args)
     {
 
-        //BenchmarkRunner.Run<AdoNetMain>();
+        BenchmarkRunner.Run<AdoNetMain>();
 
 
 
-        EFCoreMain efcoremain = new EFCoreMain();
-        efcoremain.InitTest();
+        //EFCoreMain efcoremain = new EFCoreMain();
+        //efcoremain.InitTest();
 
         //var entitiesInfo = new EntitiesInfo();
 
