@@ -141,6 +141,7 @@ namespace ADONET
             var deleteEnderecoStatement = "DELETE Endereco";
             SqlCommand commandEndereco = new SqlCommand(deleteEnderecoStatement, _connection);
             commandEndereco.ExecuteNonQuery();
+
         }
 
         [IterationSetup(Target = nameof(RunUpdateStudent))]
