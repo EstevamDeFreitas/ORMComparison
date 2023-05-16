@@ -337,17 +337,23 @@ namespace EFCore
    .Include(p => p.Cursos)
    .ToList();
 
+                var cursos = contexto.Cursos
+    .Include(c => c.Professor)
+        .ThenInclude(p => p.Pessoa)
+            .ThenInclude(e => e.Endereco)
+    .ToList();
 
 
-                foreach (var professor in professores)
+
+                foreach (var curso in cursos)
                 {
-                    if (professor != null)
+                    if (curso != null)
                     {
 
-                        contexto.Remove(professor);
-                       
-                        contexto.Remove(professor.Pessoa);
-                        contexto.Remove(professor.Pessoa.Endereco);
+                        contexto.Remove(curso);
+                        contexto.Remove(curso.Professor);
+                        contexto.Remove(curso.Professor.Pessoa);
+                        contexto.Remove(curso.Professor.Pessoa.Endereco);
                         contexto.SaveChanges();
                     }
                 }
