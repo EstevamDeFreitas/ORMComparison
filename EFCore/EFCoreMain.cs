@@ -50,9 +50,9 @@ namespace EFCore
 
             //RunInsertTeacher();
             //RunUpdateTeacher();
-            //RunDeleteTeacher();
+            RunDeleteTeacher();
 
-            RunGetTeacher();
+            //RunGetTeacher();
         }
 
         public class MeuContexto : DbContext
@@ -250,6 +250,7 @@ namespace EFCore
 
                     contexto.Pessoas.Add(pessoaNovo);
 
+                 
                     Professor professorNovo = new Professor
                     {
                         Id = entitiesInfo.Professores[i].Id,
@@ -258,6 +259,18 @@ namespace EFCore
                     };
 
                     contexto.Professores.Add(professorNovo);
+
+                    Curso cursoNovo = new Curso
+                    {
+                        Id = entitiesInfo.Cursos[i].Id,
+                        Nome = entitiesInfo.Cursos[i].Nome,
+                        Preco = entitiesInfo.Cursos[i].Preco,
+                        Descricao = entitiesInfo.Cursos[i].Descricao,
+                        ProfessorId = entitiesInfo.Cursos.First(x => x.ProfessorId == entitiesInfo.Professores[i].Id).ProfessorId,
+                };
+
+                    contexto.Cursos.Add(cursoNovo);
+
 
                 }
 
@@ -276,6 +289,7 @@ namespace EFCore
         .ThenInclude(p => p.Endereco)
     .ToList();
 
+                
                 foreach (var professor in professores)
                 {
                     professor.Especializacao = "Nova especialização";
@@ -316,10 +330,14 @@ namespace EFCore
         {
             using (var contexto = new MeuContexto())
             {
+
                 var professores = contexto.Professores
-     .Include(e => e.Pessoa)
-         .ThenInclude(p => p.Endereco)
-     .ToList();
+   .Include(p => p.Pessoa)
+       .ThenInclude(e => e.Endereco)
+   .Include(p => p.Cursos)
+   .ToList();
+
+
 
                 foreach (var professor in professores)
                 {
@@ -327,6 +345,7 @@ namespace EFCore
                     {
 
                         contexto.Remove(professor);
+                       
                         contexto.Remove(professor.Pessoa);
                         contexto.Remove(professor.Pessoa.Endereco);
                         contexto.SaveChanges();

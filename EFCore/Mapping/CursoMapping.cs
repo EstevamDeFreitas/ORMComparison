@@ -34,10 +34,6 @@ namespace EFCore.Mapping
                 .HasColumnName("ProfessorId")
                 .IsRequired();
 
-            builder.HasOne(x => x.Professor)
-                .WithMany()
-                .HasForeignKey(x => x.ProfessorId)
-                .OnDelete(DeleteBehavior.Restrict);
         }
 
     }
