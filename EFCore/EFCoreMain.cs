@@ -50,9 +50,9 @@ namespace EFCore
 
             //RunInsertTeacher();
             //RunUpdateTeacher();
-            RunDeleteTeacher();
+            //RunDeleteTeacher();
 
-            //RunGetTeacher();
+            RunGetTeacher();
         }
 
         public class MeuContexto : DbContext
@@ -284,27 +284,32 @@ namespace EFCore
         {
             using (var contexto = new MeuContexto())
             {
-                var professores = contexto.Professores
-    .Include(e => e.Pessoa)
-        .ThenInclude(p => p.Endereco)
+
+                var cursos = contexto.Cursos
+    .Include(c => c.Professor)
+        .ThenInclude(p => p.Pessoa)
+            .ThenInclude(e => e.Endereco)
     .ToList();
 
-                
-                foreach (var professor in professores)
+
+
+                foreach (var curso in cursos)
                 {
-                    professor.Especializacao = "Nova especialização";
 
-                    professor.Pessoa.PrimeiroNome = "Novo primeiro nome";
-                    professor.Pessoa.UltimoNome = "Novo ultimo nome";
-                    professor.Pessoa.NumeroTelefone = "Novo numero de cel";
-                    professor.Pessoa.DataNascimento = DateTime.Now;
+                    curso.Descricao = "Nova Descrição - Curso";
+                    curso.Professor.Especializacao = "Nova especialização";
+
+                    curso.Professor.Pessoa.PrimeiroNome = "Novo primeiro nome";
+                    curso.Professor.Pessoa.UltimoNome = "Novo ultimo nome";
+                    curso.Professor.Pessoa.NumeroTelefone = "Novo numero de cel";
+                    curso.Professor.Pessoa.DataNascimento = DateTime.Now;
 
 
-                    professor.Pessoa.Endereco.Pais = "Australia";
-                    professor.Pessoa.Endereco.Estado = "novo estado";
-                    professor.Pessoa.Endereco.Cidade = "Nova cidade";
-                    professor.Pessoa.Endereco.Rua = "Nova rua";
-                    professor.Pessoa.Endereco.Numero = "1";
+                    curso.Professor.Pessoa.Endereco.Pais = "Novo pais";
+                    curso.Professor.Pessoa.Endereco.Estado = "novo estado";
+                    curso.Professor.Pessoa.Endereco.Cidade = "Nova cidade";
+                    curso.Professor.Pessoa.Endereco.Rua = "Nova rua";
+                    curso.Professor.Pessoa.Endereco.Numero = "1";
 
                     /*
                        Pais = "Brasil",
@@ -331,18 +336,11 @@ namespace EFCore
             using (var contexto = new MeuContexto())
             {
 
-                var professores = contexto.Professores
-   .Include(p => p.Pessoa)
-       .ThenInclude(e => e.Endereco)
-   .Include(p => p.Cursos)
-   .ToList();
-
                 var cursos = contexto.Cursos
     .Include(c => c.Professor)
         .ThenInclude(p => p.Pessoa)
             .ThenInclude(e => e.Endereco)
     .ToList();
-
 
 
                 foreach (var curso in cursos)
@@ -367,12 +365,13 @@ namespace EFCore
 
             using (var contexto = new MeuContexto())
             {
-                var professorCompletos = contexto.Professores
-                                   .Include(e => e.Pessoa)
-                                   .ThenInclude(p => p.Endereco)
-                                   .ToList();
+                var cursosCompletos = contexto.Cursos
+        .Include(c => c.Professor)
+            .ThenInclude(p => p.Pessoa)
+                .ThenInclude(e => e.Endereco)
+        .ToList();
 
-                Console.WriteLine(professorCompletos.Count);
+                Console.WriteLine(cursosCompletos.Count);
             }
 
         }
