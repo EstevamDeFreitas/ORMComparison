@@ -30,87 +30,13 @@ public class DapperMain : ITestBase
     [GlobalCleanup]
     public void Cleanup()
     {
-        InsertTestCleanup();
+
+        IterationCleanup();
 
         _connection.Close();
     }
 
-    [IterationCleanup(Target = nameof(RunInsertTest))]
-    public void InsertTestCleanup()
-    {
-        var deleteStatement = "DELETE FROM Endereco";
-        _connection.Execute(deleteStatement);
-    }
-
-    public void InitTest()
-    {
-        RunInsertTest(_connection);
-    }
-
-    public void RunGetTest(SqlConnection conn)
-    {
-        string sql = "SELECT Id, Pais, Estado, Cidade, Rua, Numero FROM Enderecos";
-
-        List<Endereco> enderecos = conn.Query<Endereco>(sql).ToList();
-
-        Console.WriteLine(enderecos.Count);
-
-        foreach (Endereco endereco in enderecos)
-        {
-            Console.WriteLine($"Endereço {endereco.Id}: {endereco.Rua}, {endereco.Numero}, {endereco.Cidade}, {endereco.Estado}, {endereco.Pais}");
-        }
-    }
-
-    public void RunInsertTest(SqlConnection conn)
-    {
-
-        var endereco = new Endereco
-        {
-            Id = Guid.NewGuid(),
-            Pais = "Brasil",
-            Estado = "São Paulo",
-            Cidade = "São Paulo",
-            Rua = "Rua Teste",
-            Numero = "421"
-        };
-
-        string sql = "INSERT INTO Enderecos (Id, Pais, Estado, Cidade, Rua, Numero) VALUES (@Id, @Pais, @Estado, @Cidade, @Rua, @Numero)";
-
-        int affectedRows = conn.Execute(sql, endereco);
-
-        Console.WriteLine(affectedRows);
-
-    }
-
-    private void RunDeleteTest(SqlConnection connection, Guid enderecoId)
-    {
-
-        string sql = "DELETE FROM Enderecos WHERE Id = @EnderecoId";
-
-        int affectedRows = connection.Execute(sql, new { EnderecoId = enderecoId });
-
-        Console.WriteLine($"Foram excluídas {affectedRows} linhas da tabela Enderecos.");
-    }
-
-    private void RunUpdateTest(SqlConnection connection, Guid enderecoId)
-    {
-        Endereco enderecoAtualizado = new Endereco
-        {
-            Id = enderecoId,
-            Pais = "Brasil",
-            Estado = "São Paulo",
-            Cidade = "São Paulo",
-            Rua = "Rua Nova",
-            Numero = "123"
-        };
-
-        string sql = "UPDATE Enderecos SET Pais = @Pais, Estado = @Estado, Cidade = @Cidade, Rua = @Rua, Numero = @Numero WHERE Id = @EnderecoId";
-
-        int affectedRows = connection.Execute(sql, enderecoAtualizado);
-
-        Console.WriteLine($"Foram atualizadas {affectedRows} linhas da tabela Enderecos.");
-    }
-
+    [Benchmark]
     public void RunInsertStudent()
     {
         for (int i = 0; i < TestAmount; i++)
@@ -169,77 +95,281 @@ public class DapperMain : ITestBase
         }
     }
 
+    [IterationCleanup]
+    public void IterationCleanup()
+    {
+        var deleteCursoStatement = "DELETE FROM Curso";
+        _connection.Execute(deleteCursoStatement);
+
+        var deleteProfessorStatement = "DELETE FROM Professor";
+        _connection.Execute(deleteProfessorStatement);
+
+        var deleteEstudanteStatement = "DELETE FROM Estudante";
+        _connection.Execute(deleteEstudanteStatement);
+
+        var deletePessoaStatement = "DELETE FROM Pessoa";
+        _connection.Execute(deletePessoaStatement);
+
+        var deleteEnderecoStatement = "DELETE FROM Endereco";
+        _connection.Execute(deleteEnderecoStatement);
+
+    }
+
+    [IterationSetup(Target = nameof(RunUpdateStudent))]
+    public void UpdateStudentSetup()
+    {
+        RunInsertStudent();
+    }
+
+    [Benchmark]
     public void RunUpdateStudent()
     {
-        string sql = $@"
-        SELECT TOP {TestAmount}
-            Estudante.Id AS EstudanteId, Estudante.Descricao, 
-            Pessoa.Id AS PessoaId, Pessoa.PrimeiroNome, Pessoa.UltimoNome, Pessoa.NumeroTelefone, Pessoa.DataNascimento,
-            Endereco.Id AS EnderecoId, Endereco.Pais, Endereco.Estado, Endereco.Cidade, Endereco.Rua, Endereco.Numero
-        FROM 
-            Estudante
-            INNER JOIN Pessoa ON Estudante.PessoaId = Pessoa.Id
-            INNER JOIN Endereco ON Pessoa.EnderecoId = Endereco.Id";
-
-        var estudantes = _connection.Query<Estudante, Pessoa, Endereco, Estudante>(
-            sql,
-            (estudante, pessoa, endereco) =>
-            {
-                estudante.Pessoa = pessoa;
-                pessoa.Endereco = endereco;
-                return estudante;
-            },
-            splitOn: "PessoaId,EnderecoId"
-        ).ToList();
-
-        Console.WriteLine(estudantes.Count);
-
-        foreach (Estudante estudante in estudantes)
+        for (int i = 0; i < TestAmount; i++)
         {
-            Endereco novoEndereco = new Endereco
+            entitiesInfo.Estudantes[i].Pessoa.Endereco.Rua = "TESTE";
+            entitiesInfo.Estudantes[i].Pessoa.Endereco.Numero = "1546";
+            entitiesInfo.Estudantes[i].Pessoa.Endereco.Cidade = "CIDADE TESTE";
+            entitiesInfo.Estudantes[i].Pessoa.Endereco.Estado = "Estado TESTE";
+            entitiesInfo.Estudantes[i].Pessoa.Endereco.Pais = "PAIS TESTE";
+
+            var updateAddressStatement = "UPDATE Endereco SET Rua = @Rua, Numero = @Numero, Cidade = @Cidade, Estado = @Estado, Pais = @Pais WHERE Id = @Id";
+
+            Endereco enderecoUpdate = new Endereco
             {
-                Id = estudante.Pessoa.Endereco.Id,
-                Pais = "Brasil",
-                Estado = "São Paulo",
-                Cidade = "São Paulo",
-                Rua = "Av. Paulista",
-                Numero = "1000"
+                Pais = entitiesInfo.Estudantes[i].Pessoa.Endereco.Pais,
+                Estado = entitiesInfo.Estudantes[i].Pessoa.Endereco.Estado,
+                Cidade = entitiesInfo.Estudantes[i].Pessoa.Endereco.Cidade,
+                Rua = entitiesInfo.Estudantes[i].Pessoa.Endereco.Rua,
+                Numero = entitiesInfo.Estudantes[i].Pessoa.Endereco.Numero,
+                Id = entitiesInfo.Estudantes[i].Pessoa.Endereco.Id
             };
 
-            estudante.Pessoa.Endereco = novoEndereco;
+            _connection.Execute(updateAddressStatement, enderecoUpdate);
 
-            string sqlAtualizar = "UPDATE Enderecos SET Pais = @Pais, Estado = @Estado, Cidade = @Cidade, Rua = @Rua, Numero = @Numero WHERE Id = @Id";
-            _connection.Execute(sqlAtualizar, novoEndereco);
+
+            entitiesInfo.Estudantes[i].Pessoa.NumeroTelefone = "12345678";
+            entitiesInfo.Estudantes[i].Pessoa.PrimeiroNome = "PESSOA TESTE";
+            entitiesInfo.Estudantes[i].Pessoa.DataNascimento = DateTime.Now;
+            entitiesInfo.Estudantes[i].Pessoa.UltimoNome = "SOBRENOME TESTE";
+
+            var updatePessoaStatement = "UPDATE Pessoa SET NumeroTelefone = @NumeroTel, PrimeiroNome = @PrimeiroNome, DataNascimento = @DataNasc, UltimoNome = @UltimoNome WHERE Id = @Id";
+
+            _connection.Execute(updatePessoaStatement, new { 
+                PrimeiroNome = entitiesInfo.Estudantes[i].Pessoa.PrimeiroNome,
+                UltimoNome = entitiesInfo.Estudantes[i].Pessoa.UltimoNome,
+                NumeroTel = entitiesInfo.Estudantes[i].Pessoa.NumeroTelefone,
+                DataNasc = entitiesInfo.Estudantes[i].Pessoa.DataNascimento,
+                Id = entitiesInfo.Estudantes[i].Pessoa.Id
+            });
         }
     }
 
+    [IterationSetup(Target = nameof(RunDeleteStudent))]
+    public void DeleteStudentSetup()
+    {
+        RunInsertStudent();
+    }
+
+    [Benchmark]
     public void RunDeleteStudent()
     {
-        throw new NotImplementedException();
+        var deleteEstudanteStatement = "DELETE FROM Estudante";
+        _connection.Execute(deleteEstudanteStatement);
+
+        var deletePessoaStatement = "DELETE FROM Pessoa";
+        _connection.Execute(deletePessoaStatement);
+
+        var deleteEnderecoStatement = "DELETE FROM Endereco";
+        _connection.Execute(deleteEnderecoStatement);
     }
 
+    [IterationSetup(Target = nameof(RunGetStudent))]
+    public void GetStudentSetup()
+    {
+        RunInsertStudent();
+    }
+
+    [Benchmark]
     public void RunGetStudent()
     {
-        throw new NotImplementedException();
+        var getStudentStatement = @"
+        SELECT *
+        FROM Estudante est
+        INNER JOIN Pessoa p ON p.Id = est.PessoaId
+        INNER JOIN Endereco ende ON ende.Id = p.EnderecoId";
+
+        using (var reader = _connection.ExecuteReader(getStudentStatement))
+        {
+        }
+
     }
 
+    [Benchmark]
     public void RunInsertTeacher()
     {
-        throw new NotImplementedException();
+        for (int i = 0; i < TestAmount; i++)
+        {
+            #region Insert Endereco
+            var insertAddressStatement = @"
+                INSERT INTO Endereco (Id, Pais, Estado, Cidade, Rua, Numero) 
+                VALUES (@Id, @Pais, @Estado, @Cidade, @Rua, @Numero)";
+
+            Endereco enderecoNovo = new Endereco
+            {
+                Id = entitiesInfo.Professores[i].Pessoa.Endereco.Id,
+                Pais = entitiesInfo.Professores[i].Pessoa.Endereco.Pais,
+                Estado = entitiesInfo.Professores[i].Pessoa.Endereco.Estado,
+                Cidade = entitiesInfo.Professores[i].Pessoa.Endereco.Cidade,
+                Rua = entitiesInfo.Professores[i].Pessoa.Endereco.Rua,
+                Numero = entitiesInfo.Professores[i].Pessoa.Endereco.Numero
+            };
+
+            _connection.Execute(insertAddressStatement, enderecoNovo);
+
+            #endregion
+
+            #region Insert Pessoa
+            var insertPersonStatement = @"
+                    INSERT INTO Pessoa (Id,PrimeiroNome,UltimoNome,NumeroTelefone,DataNascimento,EnderecoId) 
+                    VALUES (@Id,@PrimeiroNome,@UltimoNome,@NumeroTelefone,@DataNascimento,@EnderecoId)";
+
+            Pessoa pessoaNovo = new Pessoa
+            {
+                Id = entitiesInfo.Professores[i].Pessoa.Id,
+                PrimeiroNome = entitiesInfo.Professores[i].Pessoa.PrimeiroNome,
+                UltimoNome = entitiesInfo.Professores[i].Pessoa.UltimoNome,
+                NumeroTelefone = entitiesInfo.Professores[i].Pessoa.NumeroTelefone,
+                DataNascimento = entitiesInfo.Professores[i].Pessoa.DataNascimento,
+                EnderecoId = entitiesInfo.Professores[i].Pessoa.EnderecoId
+            };
+
+            _connection.Execute(insertPersonStatement, pessoaNovo);
+
+            #endregion
+
+            #region Insert Teacher
+
+            var insertTeacherStatement = @"
+                    INSERT INTO Professor (Id,Especializacao,PessoaId)
+                    VALUES (@Id, @Especializacao, @PessoaId)";
+
+            Professor professorNovo = new Professor
+            {
+                Id = entitiesInfo.Professores[i].Id,
+                Especializacao = entitiesInfo.Professores[i].Especializacao,
+                PessoaId = entitiesInfo.Professores[i].PessoaId
+            };
+
+            _connection.Execute(insertTeacherStatement, professorNovo);
+
+            #endregion
+
+            #region Insert Curso
+
+            var insertCursoStatement = @"
+                     INSERT INTO Curso (Id,Nome,Preco,Descricao,ProfessorId)
+                     VALUES (@Id,@Nome,@Preco,@Descricao,@ProfessorId)";
+
+            Curso cursoNovo = new Curso
+            {
+                Id = entitiesInfo.Cursos.First(x => x.ProfessorId == entitiesInfo.Professores[i].Id).Id,
+                Nome = entitiesInfo.Cursos.First(x => x.ProfessorId == entitiesInfo.Professores[i].Id).Nome,
+                Preco = entitiesInfo.Cursos.First(x => x.ProfessorId == entitiesInfo.Professores[i].Id).Preco,
+                Descricao = entitiesInfo.Cursos.First(x => x.ProfessorId == entitiesInfo.Professores[i].Id).Descricao,
+                ProfessorId = entitiesInfo.Cursos.First(x => x.ProfessorId == entitiesInfo.Professores[i].Id).ProfessorId
+            };
+
+            _connection.Execute(insertCursoStatement, cursoNovo);
+
+            #endregion
+        }
     }
 
+    [IterationSetup(Target = nameof(RunUpdateTeacher))]
+    public void UpdateTeacherSetup()
+    {
+        RunInsertTeacher();
+    }
+
+    [Benchmark]
     public void RunUpdateTeacher()
     {
-        throw new NotImplementedException();
+        for (int i = 0; i < TestAmount; i++)
+        {
+            entitiesInfo.Professores[i].Pessoa.Endereco.Rua = "TESTE";
+            entitiesInfo.Professores[i].Pessoa.Endereco.Numero = "1546";
+            entitiesInfo.Professores[i].Pessoa.Endereco.Cidade = "CIDADE TESTE";
+            entitiesInfo.Professores[i].Pessoa.Endereco.Estado = "Estado TESTE";
+            entitiesInfo.Professores[i].Pessoa.Endereco.Pais = "PAIS TESTE";
+
+            var updateAddressStatement = @"
+                        UPDATE Endereco
+                        SET Rua = @Rua, Numero = @Numero, Cidade = @Cidade, Estado = @Estado, Pais = @Pais
+                        WHERE Id = @Id";
+
+            Endereco enderecoUpdate = new Endereco
+            {
+                Pais = entitiesInfo.Professores[i].Pessoa.Endereco.Pais,
+                Estado = entitiesInfo.Professores[i].Pessoa.Endereco.Estado,
+                Cidade = entitiesInfo.Professores[i].Pessoa.Endereco.Cidade,
+                Rua = entitiesInfo.Professores[i].Pessoa.Endereco.Rua,
+                Numero = entitiesInfo.Professores[i].Pessoa.Endereco.Numero,
+                Id = entitiesInfo.Professores[i].Pessoa.Endereco.Id
+            };
+
+            _connection.Execute(updateAddressStatement, enderecoUpdate);
+
+
+            var updateCursoStatement = "UPDATE Curso SET Descricao = @Descricao WHERE ProfessorId = @ProfessorId";
+
+            _connection.Execute(updateCursoStatement, new { 
+                Descricao = "TESTE DESCRIÇÃO",
+                ProfessorId = entitiesInfo.Professores[i].Id
+            });
+
+        }
     }
 
+    [IterationSetup(Target = nameof(RunDeleteTeacher))]
+    public void DeleteTeacherSetup()
+    {
+        RunInsertTeacher();
+    }
+
+    [Benchmark]
     public void RunDeleteTeacher()
     {
-        throw new NotImplementedException();
+        var deleteCursoStatement = "DELETE FROM Curso";
+        _connection.Execute(deleteCursoStatement);
+
+        var deleteProfessorStatement = "DELETE FROM Professor";
+        _connection.Execute(deleteProfessorStatement);
+
+        var deletePessoaStatement = "DELETE FROM Pessoa";
+        _connection.Execute(deletePessoaStatement);
+
+        var deleteEnderecoStatement = "DELETE FROM Endereco";
+        _connection.Execute(deleteEnderecoStatement);
     }
 
+    [IterationSetup(Target = nameof(RunGetTeacher))]
+    public void GetTeacherSetup()
+    {
+        RunInsertTeacher();
+    }
+
+    [Benchmark]
     public void RunGetTeacher()
     {
-        throw new NotImplementedException();
+        var getProfessorStatement = @"
+                    SELECT *
+                    FROM Professor P
+                    INNER JOIN Pessoa Pe ON Pe.Id = P.PessoaId
+                    INNER JOIN Endereco E ON E.Id = Pe.EnderecoId
+                    INNER JOIN Curso C ON C.ProfessorId = P.Id";
+
+        using (var reader = _connection.ExecuteReader(getProfessorStatement))
+        {
+        }
     }
 }
