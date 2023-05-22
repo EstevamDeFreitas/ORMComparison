@@ -15,12 +15,12 @@ namespace EFCore
     public class EFCoreMain : ITestBase
     {
         private static  string _stringConexao = "Initial Catalog=ORMComparison;Data Source=DESKTOP-GPE9S1B\\SQLEXPRESS;User ID=orm_user;Password=123456;TrustServerCertificate=True";
-        /*
+        
         [Params(500, 1000, 2000, 5000, 10000)]
-        public int TestAmount { get; set; }*/
+        public int TestAmount { get; set; }
 
-        /*FOI NECESSARIO USAR UM VALOR MOCADO NO TESTAMOUNT POIS O NOTE DO CHICO NÃO RODA OO BENCHMARK*/
-        public int TestAmount = 1000;
+        /*FOI NECESSARIO USAR UM VALOR MOCADO NO TESTAMOUNT POIS O NOTE DO CHICO NÃO RODA OO BENCHMARK
+        public int TestAmount = 1000;*/
 
         private EntitiesInfo entitiesInfo { get; set; }
 
@@ -33,13 +33,13 @@ namespace EFCore
             return optionsBuilder.Options;
         }
 
-
+        /*
         public EFCoreMain()
         {
 
             entitiesInfo = new EntitiesInfo();
 
-        }
+        }*/
 
         public void InitTest()
         {
@@ -79,6 +79,7 @@ namespace EFCore
             }
         }
 
+        [Benchmark]
         public void RunInsertStudent()
         {
             using (var contexto = new MeuContexto())
@@ -128,6 +129,7 @@ namespace EFCore
 
             }
 
+        [Benchmark]
         public void RunUpdateStudent()
         {
             using (var contexto = new MeuContexto())
@@ -174,7 +176,8 @@ namespace EFCore
 
         }
 
-            public void RunDeleteStudent()
+        [Benchmark]
+        public void RunDeleteStudent()
         {
 
             using (var contexto = new MeuContexto())
@@ -200,6 +203,7 @@ namespace EFCore
 
         }
 
+        [Benchmark]
         public void RunGetStudent()
         {
 
@@ -217,6 +221,7 @@ namespace EFCore
 
         }
 
+        [Benchmark]
         public void RunInsertTeacher()
         {
 
@@ -280,6 +285,7 @@ namespace EFCore
             
         }
 
+        [Benchmark]
         public void RunUpdateTeacher()
         {
             using (var contexto = new MeuContexto())
@@ -331,6 +337,7 @@ namespace EFCore
             }
         }
 
+        [Benchmark]
         public void RunDeleteTeacher()
         {
             using (var contexto = new MeuContexto())
@@ -360,6 +367,7 @@ namespace EFCore
 
         }
 
+        [Benchmark]
         public void RunGetTeacher()
         {
 
@@ -376,14 +384,27 @@ namespace EFCore
 
         }
 
-        public void Setup()
+
+        [IterationCleanup]
+        public void IterationCleanup()
         {
-            throw new NotImplementedException();
+            RunDeleteStudent();
+
+            RunDeleteTeacher();
         }
 
+
+        [GlobalSetup]
+        public void Setup()
+        {
+                entitiesInfo = new EntitiesInfo();
+        }
+
+        [GlobalCleanup]
         public void Cleanup()
         {
-            throw new NotImplementedException();
+            IterationCleanup();
+            
         }
     }
 }
