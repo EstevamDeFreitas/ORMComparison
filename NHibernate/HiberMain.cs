@@ -172,12 +172,6 @@ public class HiberMain : ITestBase, IDisposable
         {
             var estudantes = session.Query<Estudante>().ToList();
 
-            foreach (var estudante in estudantes)
-            {
-                var pessoa = estudante.Pessoa;
-                var endereco = estudante.Pessoa.Endereco;
-
-            }
         }
     }
 
@@ -294,15 +288,6 @@ public class HiberMain : ITestBase, IDisposable
         using (ISession session = sessionFactory.OpenSession())
         {
             var professores = session.Query<Professor>().ToList();
-
-            foreach (var professor in professores)
-            {
-                var pessoa = professor.Pessoa;
-                var endereco = professor.Pessoa.Endereco;
-                var curso = professor.Cursos;
-
-
-            }
         }
     }
 
