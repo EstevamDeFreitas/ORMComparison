@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EntidadesHiber
+{
+    public class CursoAluno
+    {
+        public Guid AlunoId { get; set; }
+        public Guid CursoId { get; set; }
+        public int Nota { get; set; }
+
+        public Curso Curso { get; set; }
+        public Estudante Aluno { get; set; }
+    }
+}
